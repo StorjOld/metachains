@@ -27,7 +27,7 @@ class Synchronizer(object):
         for block in self.coin.blocks(self.starting_point):
             for txid, data in self.coin.transactions(block):
                 try:
-                    self.process_blockchain(txid, info)
+                    self.process_blockchain(txid, data)
                 except:
                     pass
 
