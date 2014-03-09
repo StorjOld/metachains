@@ -1,2 +1,2 @@
-from cloudcoin import CloudCoin
+from synchronizer import Synchronizer
 from datacoin import Datacoin

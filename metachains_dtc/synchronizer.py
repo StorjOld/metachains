@@ -1,10 +1,10 @@
 import json
 import base64
 
-class CloudCoin(object):
-    """CloudCoin accesses data from and to a blockchain.
+class Synchronizer(object):
+    """Synchronizer accesses data from and to a blockchain.
 
-    CloudCoin must be instantiated with three objects:
+    Synchronizer must be instantiated with three objects:
 
     coin           -- An object that responds to blocks() and transactions(block)
     cloud          -- An object that responds to data_dump(bytes) and data_load(data, txid)
