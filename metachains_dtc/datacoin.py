@@ -54,7 +54,7 @@ class Datacoin(object):
             if rawdata is None:
                 continue
 
-            yield txid, base64.decode(rawdata)
+            yield txid, base64.b64decode(rawdata)
 
     def send_data(self, data):
         """Send data to the blockchain."""
