@@ -1,6 +1,3 @@
-import json
-import base64
-
 class Synchronizer(object):
     """Synchronizer accesses data from and to a blockchain.
 
