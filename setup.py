@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='metachains_dtc',
-    version='0.1.0',
+    version='0.1.1',
     author='Hugo Peixoto',
     author_email='hugo.peixoto@gmail.com',
     packages=['metachains_dtc'],

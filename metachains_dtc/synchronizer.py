@@ -24,7 +24,7 @@ class Synchronizer(object):
 
     def scan_blockchain(self):
         """Scan blockchain for non registered data."""
-        for block in self.coin.blocks(starting_point):
+        for block in self.coin.blocks(self.starting_point):
             for txid, data in dw.transactions(block):
                 try:
                     self.process_blockchain(txid, info)
