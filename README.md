@@ -60,4 +60,4 @@ To use `Synchronizer`, you must first create a `Datacoin` and a database object:
     sync = datacoin_dtc.Synchronizer(coin, database, 220000)
 
     sync.scan_blockchain()  # Downloads new data *from* the blockchain.
-    sync.scan_databate()    # Uploads new data *to* the blockchain.
+    sync.scan_database()    # Uploads new data *to* the blockchain.
