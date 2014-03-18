@@ -35,6 +35,13 @@ class Datacoin(object):
         """Return the total number of blocks."""
         return self.jsonrpc("getblockcount", [])
 
+    def balance(self):
+        """Return the total balance."""
+        return self.jsonrpc("getbalance", [])
+
+    def address(self, account):
+        return self.jsonrpc("getaccountaddress", [account])
+
     def blocks(self, index = 0, count=-1):
         """Return blocks from blockchain.
 
