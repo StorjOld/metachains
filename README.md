@@ -27,6 +27,10 @@ Once you do this, you'll have access to the following methods:
 
     dtc.block_count()        # Returns the number of blocks in the chain.
 
+    dtc.balance()            # Returns the wallet balance.
+
+    dtc.address(account)     # Returns an address for the given account.
+
     dtc.blocks(index, n)     # Generates n blocks in the chain,
                              # starting from index.
 
