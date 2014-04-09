@@ -66,3 +66,7 @@ class Datacoin(object):
     def send_data(self, data):
         """Send data to the blockchain."""
         return self.jsonrpc("senddata", [base64.b64encode(data)])
+
+    def send_data_address(self, data, address, amount):
+        """Send data to the blockchain via a standard transaction."""
+        return self.jsonrpc("sendtoaddress", [address, amount, "storj", "storj", base64.b64encode(data)])
