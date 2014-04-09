@@ -39,6 +39,8 @@ Once you do this, you'll have access to the following methods:
 
     dtc.send_data(raw_data)  # Sends data to the blockchain.
 
+    dtc.send_data(raw_data, address, amount)  # Send data to the blockchain via a standard transaction.
+
 
 #### Synchronizer usage
 
