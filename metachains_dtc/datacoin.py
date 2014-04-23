@@ -6,7 +6,7 @@ import requests
 class Datacoin(object):
     """Datacoin abstracts away all RPC specific methods."""
 
-    MaxPayloadSize = 128*1024
+    MaxPayloadSize = 95*1024
 
     def __init__(self, url, username, password):
         self.url = url
