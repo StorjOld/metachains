@@ -54,6 +54,7 @@ The database object must respond to the following methods:
 
 - `data_dump(n)` -- This should return a byte array with the data to be uploaded to the blockchain, up to n bytes. When there is nothing more to upload, it should return `None`.
 - `data_load(data, txid)` -- Notifies the database of new content that has been added to the blockchain, in the given txid transaction.
+- `last_known_block()` -- Returns the block height from where blockchain scanning should begin.
 
 
 To use `Synchronizer`, you must first create a `Datacoin` and a database object:
@@ -63,7 +64,7 @@ To use `Synchronizer`, you must first create a `Datacoin` and a database object:
     coin = datacoin_dtc.Datacoin("http://host:port", "username", "password")
     database = ...
 
-    sync = datacoin_dtc.Synchronizer(coin, database, 220000)
+    sync = datacoin_dtc.Synchronizer(coin, database)
 
     sync.scan_blockchain()  # Downloads new data *from* the blockchain.
     sync.scan_database()    # Uploads new data *to* the blockchain.
