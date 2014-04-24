@@ -5,13 +5,13 @@ class Synchronizer(object):
 
     coin           -- An object that responds to blocks() and transactions(block)
     cloud          -- An object that responds to data_dump(bytes) and data_load(data, txid)
-    starting_point -- Starting block index. Blockchain will be scanned from this point forward
 
     """
-    def __init__(self, coin, cloud, starting_point):
+    ConfirmationThreshold = 10
+
+    def __init__(self, coin, cloud):
         self.coin           = coin
         self.cloud          = cloud
-        self.starting_point = starting_point
 
     def scan_database(self):
         """Scan database for non published data."""
@@ -24,12 +24,14 @@ class Synchronizer(object):
 
     def scan_blockchain(self):
         """Scan blockchain for non registered data."""
-        for block in self.coin.blocks(self.starting_point):
+        for block in self.coin.blocks(self.cloud.last_known_block()):
             for txid, data in self.coin.transactions(block):
                 try:
                     self.process_blockchain(txid, data)
                 except:
                     pass
+
+            self.confirm(block)
 
     def process_blockchain(self, txid, info):
         """Load payload into local database."""
@@ -38,3 +40,7 @@ class Synchronizer(object):
     def process_database(self, payload):
         """Publish payload into blockchain."""
         self.coin.send_data(payload)
+
+    def confirm(self, block):
+        self.cloud.visit_block(
+            max(block["height"] - self.ConfirmationThreshold, 0))
