@@ -8,6 +8,8 @@ class Synchronizer(object):
 
     """
     ConfirmationThreshold = 10
+    TransactionAmount = 0.05
+    TransactionAddress = "D8B9xbwN6696tw9UbYmqvZNLNZ4MH9HSdE"
 
     def __init__(self, coin, cloud):
         self.coin           = coin
@@ -39,7 +41,10 @@ class Synchronizer(object):
 
     def process_database(self, payload):
         """Publish payload into blockchain."""
-        self.coin.send_data(payload)
+        self.coin.send_data_address(
+            payload,
+            self.TransactionAddress,
+            self.TransactionAmount)
 
     def confirm(self, block):
         self.cloud.visit_block(
