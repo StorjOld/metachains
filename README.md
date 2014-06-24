@@ -12,6 +12,10 @@ can build a package and install it through pip:
     python setup.py sdist
     sudo pip install dist/metachains_dtc-0.1.4.tar.gz
 
+#### Datacoin installation 
+Instructions can be found at [INSTALL.md](/INSTALL.md).
+
+
 #### Datacoin wrapper usage
 
 This module contains a class that can be used to communicate via json-rpc.
