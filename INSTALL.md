@@ -56,7 +56,6 @@ Now add a configuration file with some values to your user directory:
 
     mkdir -p ~/.datacoin;
     echo 'server=1
-    gen=1
     rpcallowip=127.0.0.1
     rpcuser=primecoinrpc
     rpcpassword=f1239a0069m
