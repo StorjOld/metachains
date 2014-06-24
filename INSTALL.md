@@ -1,7 +1,7 @@
 Setting up datacoind on Ubuntu
 ==============================
 
-The following tutorial shows you how to compile and install datacoind on a freshly installed Ubuntu system, including the necessary dependencies. Everything is done from the Terminal. Be sure that you are logged in as the user who you want to automatically start datacoind upon system boot.
+The following tutorial shows you how to compile and install datacoind on a freshly installed Ubuntu system, including the necessary dependencies. Everything is done from the Terminal. Be sure that you are logged in as the user who you want to automatically start datacoind upon system boot. This has been tested on Ubuntu 12.04.4 x32 on [Digital Ocean](http://digitalocean.com).
 
 Initial Steps
 -------------
