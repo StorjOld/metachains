@@ -8,25 +8,11 @@ Initial Steps
 
 First, there are some dependencies and tools that can easily be installed through apt-get:
 
-    sudo apt-get update ; sudo apt-get install -y build-essential m4 libssl-dev libdb++-dev libboost-all-dev libminiupnpc-dev zip
+    sudo apt-get update ; sudo apt-get install -y build-essential m4 libssl-dev libdb++-dev libboost-all-dev libminiupnpc-dev zip libgmp-dev
 
 Then, create a directory for the files that you download and compile in the next steps:
 
-    mkdir ~/build; cd ~/build
-
-Download and Compile GMP
-------------------------
-
-GMP is a dependency that needs to be compiled and installed manually. These commands will download and extract GMP:
-
-    wget http://mirrors.kernel.org/gnu/gmp/gmp-5.1.2.tar.bz2;
-    tar xjvf gmp-5.1.2.tar.bz2;cd gmp-5.1.2;
-
-Next step is to configure the system for the compilation, then do the actual compilation (with make), and install:
-
-    ./configure --enable-cxx;
-    make
-    sudo make install
+    mkdir ~/build;
 
 Download and Compile datacoind
 ------------------------------
