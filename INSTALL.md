@@ -41,8 +41,9 @@ Setup datacoin
 Now add a configuration file with some values to your user directory:
 
     mkdir -p ~/.datacoin;
-    echo 'addnode=node1.storj.io
-    addnode=node2.storj.io
+    echo 'addnode=node1.metadisk.org
+    addnode=node2.metadisk.org
+    addnode=node3.metadisk.org
     addnode=76.126.98.2:4777
     addnode=95.85.19.138:4777
     addnode=92.222.24.57:4777
