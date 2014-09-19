@@ -51,7 +51,7 @@ class Datacoin(object):
 
         """
         last = self.block_count() if count < 0 else index + count
-        for i in xrange(index, last):
+        for i in range(index, last):
             yield self.jsonrpc("getblock", [self.jsonrpc("getblockhash", [i])])
 
     def transactions(self, block):
