@@ -1,2 +1,2 @@
-from synchronizer import Synchronizer
-from datacoin import Datacoin
+from .synchronizer import Synchronizer
+from .datacoin import Datacoin
