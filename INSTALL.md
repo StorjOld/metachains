@@ -15,7 +15,7 @@ Then, create a directory for the files that you download and compile in the next
     mkdir ~/build;
 
 Download and Compile florincoind
-------------------------------
+--------------------------------
 
 Get the florincoind file from GitHub and extract it:
 
@@ -29,7 +29,7 @@ Then, compile and install florincoind:
     sudo cp -f florincoind /usr/local/bin/
 
 Setup florincoin
---------------
+----------------
 
 Now add a configuration file with some values to your user directory:
 
