@@ -1,7 +1,7 @@
-metachains-dtc
-==============
+metachains
+==========
 
-Tool for accessing and dumping metachain data into the Datacoin blockchain.
+Tool for accessing and dumping metachain data into the Florincoin blockchain.
 
 
 #### Installation
@@ -12,19 +12,19 @@ can build a package and install it through pip:
     python setup.py sdist
     sudo pip install dist/metachains_dtc-0.1.4.tar.gz
 
-#### Datacoin installation 
+#### Florincoin installation 
 Instructions can be found at [INSTALL.md](/INSTALL.md).
 
 
-#### Datacoin wrapper usage
+#### Florincoin wrapper usage
 
 This module contains a class that can be used to communicate via json-rpc.
 It must be configured with the json rpc url, username and password:
 
-    import metachains_dtc
-    dtc = metachains_dtc.Datacoin(
+    import metachains
+    dtc = metachains.Florincoin(
         "http://127.0.0.1:11777",
-        "datacoind",
+        "florincoind",
         "secret-password")
 
 Once you do this, you'll have access to the following methods:
@@ -48,7 +48,7 @@ Once you do this, you'll have access to the following methods:
 
 #### Synchronizer usage
 
-You can use `metachains_dtc.Synchronizer` to synchronize data between
+You can use `metachains.Synchronizer` to synchronize data between
 a blockchain and a local database:
 
 - `Synchronizer.scan_database` scans the database and uploads its data to the blockchain.
@@ -61,14 +61,14 @@ The database object must respond to the following methods:
 - `last_known_block()` -- Returns the block height from where blockchain scanning should begin.
 
 
-To use `Synchronizer`, you must first create a `Datacoin` and a database object:
+To use `Synchronizer`, you must first create a `Florincoin` and a database object:
 
-    import datacoin_dtc
+    import metachains
 
-    coin = datacoin_dtc.Datacoin("http://host:port", "username", "password")
+    coin = metachains.Florincoin("http://host:port", "username", "password")
     database = ...
 
-    sync = datacoin_dtc.Synchronizer(coin, database)
+    sync = metachains.Synchronizer(coin, database)
 
     sync.scan_blockchain()  # Downloads new data *from* the blockchain.
     sync.scan_database()    # Uploads new data *to* the blockchain.
