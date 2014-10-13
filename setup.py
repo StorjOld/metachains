@@ -1,11 +1,11 @@
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 setup(
     name='metachains_dtc',
     version='0.2.0',
     author='Hugo Peixoto',
     author_email='hugo.peixoto@gmail.com',
-    packages=['metachains_dtc'],
+    packages=find_packages(),
     scripts=[],
     url='https://github.com/Storj/metachains_dtc',
     license='LICENSE',

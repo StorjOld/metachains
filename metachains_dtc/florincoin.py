@@ -3,10 +3,10 @@ import json
 import base64
 import requests
 
-class Datacoin(object):
-    """Datacoin abstracts away all RPC specific methods."""
+class Florincoin(object):
+    """Florincoin abstracts away all RPC specific methods."""
 
-    MaxPayloadSize = 95*1024
+    MaxPayloadSize = 528
 
     def __init__(self, url, username, password):
         self.url = url
@@ -15,21 +15,24 @@ class Datacoin(object):
 
     def jsonrpc(self, method, params):
         """Execute a json rpc method (with delayed retries)."""
-        try:
-            response = requests.post(
-                self.url,
-                headers = {'Content-Type': 'text/plain'},
-                data = json.dumps({
-                    "jsonrpc": "2.0",
-                    "id": 42,
-                    "method": method,
-                    "params": params }),
-                auth = requests.auth.HTTPBasicAuth(self.username, self.password))
-        except requests.exceptions.ConnectionError:
-            time.sleep(2.0)
-            return self.jsonrpc(method, params)
+        while True:
+            try:
+                response = requests.post(
+                    self.url,
+                    headers = {'Content-Type': 'text/plain'},
+                    data = json.dumps({
+                        "jsonrpc": "2.0",
+                        "id": 42,
+                        "method": method,
+                        "params": params }),
+                    auth = requests.auth.HTTPBasicAuth(self.username, self.password))
 
-        return json.loads(response.text)["result"]
+                return json.loads(response.text)["result"]
+            except requests.exceptions.ConnectionError:
+                time.sleep(2.0)
+#               continue
+                raise
+
 
     def block_count(self):
         """Return the total number of blocks."""
@@ -63,10 +66,9 @@ class Datacoin(object):
 
             yield txid, base64.b64decode(rawdata)
 
-    def send_data(self, data):
-        """Send data to the blockchain."""
-        return self.jsonrpc("senddata", [base64.b64encode(data)])
-
     def send_data_address(self, data, address, amount):
         """Send data to the blockchain via a standard transaction."""
-        return self.jsonrpc("sendtoaddress", [address, amount, "storj", "storj", base64.b64encode(data)])
+
+        if len(data) > Florincoin.MaxPayloadSize:
+            raise Exception('not handled yet')
+        return self.jsonrpc("sendtoaddress", [address, str(amount), "storj", "storj", str(base64.b64encode(data))])

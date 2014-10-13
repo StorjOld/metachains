@@ -1,0 +1,5 @@
+include README*
+include INSTALL*
+include LICENSE*
+include tox*
+include *.py

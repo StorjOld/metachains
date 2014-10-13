@@ -1,7 +1,7 @@
-Setting up datacoind on Ubuntu
+Setting up florincoind on Ubuntu
 ==============================
 
-The following tutorial shows you how to compile and install datacoind on a freshly installed Ubuntu system, including the necessary dependencies. Everything is done from the Terminal. Be sure that you are logged in as the user who you want to automatically start datacoind upon system boot. This has been tested on Ubuntu 12.04.4 x32 on [Digital Ocean](http://digitalocean.com).
+The following tutorial shows you how to compile and install florincoind on a freshly installed Ubuntu system, including the necessary dependencies. Everything is done from the Terminal. Be sure that you are logged in as the user who you want to automatically start florincoind upon system boot. This has been tested on Ubuntu 14.04.1 x86_64 on [Digital Ocean](http://digitalocean.com).
 
 Initial Steps
 -------------
@@ -14,57 +14,48 @@ Then, create a directory for the files that you download and compile in the next
 
     mkdir ~/build;
 
-Download and Compile datacoind
+Download and Compile florincoind
 ------------------------------
 
-Get the datacoind file from GitHub and extract it:
+Get the florincoind file from GitHub and extract it:
 
     cd ~/build
-    wget https://github.com/foo1inge/datacoin-hp/archive/master.zip ;
-    unzip master.zip;cd datacoin-hp-master/src ;
+    wget https://github.com/pascalguru/florincoin/archive/master.zip
+    unzip master.zip;cd florincoin-master/src ;
 
-The makefile needs some editing before it can be used for compiling:
+Then, compile and install florincoind:
 
-    cp makefile.unix makefile.my;
-    sed -i -e 's/$(OPENSSL_INCLUDE_PATH))/$(OPENSSL_INCLUDE_PATH) \/usr\/local\/include)/' makefile.my;
-    sed -i -e 's/$(OPENSSL_LIB_PATH))/$(OPENSSL_LIB_PATH) \/usr\/local\/lib)/' makefile.my ;
-    sed -i -e 's/$(LDHARDENING) $(LDFLAGS)/$(LDHARDENING) -Wl,-rpath,\/usr\/local\/lib $(LDFLAGS)/' makefile.my;
+    make -f makefile.unix
+    sudo cp -f florincoind /usr/local/bin/
 
-Then, compile and install datacoind:
-
-    make -f makefile.my
-    sudo cp -f datacoind /usr/local/bin/
-
-Setup datacoin
+Setup florincoin
 --------------
 
 Now add a configuration file with some values to your user directory:
 
-    mkdir -p ~/.datacoin;
+    mkdir -p ~/.florincoin;
     echo 'addnode=node1.metadisk.org
     addnode=node2.metadisk.org
     addnode=node3.metadisk.org
-    addnode=76.126.98.2:4777
-    addnode=95.85.19.138:4777
-    addnode=92.222.24.57:4777
-    addnode=89.122.9.160:4777
-    addnode=87.106.56.19:4777
-    addnode=222.223.153.175:41430
-    addnode=66.85.122.10:60452
-    addnode=174.0.123.157:4777
-    addnode=86.138.230.200:52832
+    rpcport=7313
+    daemon=1
     server=1
+    listen=1
+    port=7312
+    noirc=0
+    maxconnections=30
+    addnode=146.185.148.114
+    addnode=192.241.171.45
     rpcallowip=127.0.0.1
-    rpcuser=primecoinrpc
-    rpcpassword=f1239a0069m
-    sievesize=1000000' > ~/.datacoin/datacoin.conf
+    rpcuser=florincoinrpc
+    rpcpassword=f1239a0069m' > ~/.florincoin/florincoin.conf
 
-Add datacoin as a daemon
+Add florincoin as a daemon
 ------------------------
 
-In order to make datacoind start upon system boot and stop when the system shuts down, create an Upstart script with the following command:
+In order to make florincoind start upon system boot and stop when the system shuts down, create an Upstart script with the following command:
 
-    echo 'description "datacoind"
+    echo 'description "florincoind"
     start on filesystem
     stop on runlevel [!2345]
     oom never
@@ -74,17 +65,17 @@ In order to make datacoind start upon system boot and stop when the system shuts
     script
     user='"$USER"'
     home=/home/$user
-    cmd=/usr/local/bin/datacoind
-    pidfile=$home/.datacoin/datacoind.pid
+    cmd=/usr/local/bin/florincoind
+    pidfile=$home/.florincoin/florincoind.pid
     # Dont change anything below here unless you know what youre doing
     [[ -e $pidfile && ! -d "/proc/$(cat $pidfile)" ]] && rm $pidfile
     [[ -e $pidfile && "$(cat /proc/$(cat $pidfile)/cmdline)" != $cmd* ]] && rm $pidfile
     exec start-stop-daemon --start -c $user --chdir $home --pidfile $pidfile --startas $cmd -b -m
-    end script' | sudo tee /etc/init/datacoind.conf > /dev/null;
+    end script' | sudo tee /etc/init/florincoind.conf > /dev/null;
 
 Then, reload the configuration to include the script you just made:
 
     sudo initctl reload-configuration
 
-If you want to manually start datacoind as a daemon, run `sudo start datacoind` and to stop it, run `sudo stop datacoind`.
+If you want to manually start florincoind as a daemon, run `sudo start florincoind` and to stop it, run `sudo stop florincoind`.
 
