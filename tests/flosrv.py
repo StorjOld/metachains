@@ -30,19 +30,22 @@ class FlorinCoinSrv(object):
             return getattr(self, 'handle_' + req['method'])(req['params'])
 
         def handle_getaccountaddress(self, params):
-            return None
+            return 'addr'
 
         def handle_getblockhash(self, params):
             return None
 
         def handle_getblock(self, params):
-            return None
+            return {'tx': ['tbd',], }
 
         def handle_getbalance(self, params):
             return str(FlorinCoinSrv.CURRENT_BAL)
 
         def handle_sendtoaddress(self, params):
-            return {'txid': str(uuid.uuid1()), } # TODO
+            txid = str(uuid.uuid1())
+            self.transactions[txid] = None
+
+            return {'txid':  txid, }
 
         def handle_getblockcount(self, params):
             return FlorinCoinSrv.BLOCK_COUNT
@@ -53,7 +56,6 @@ class FlorinCoinSrv(object):
                 success = True
                 response = {'result': result, }
             except (KeyError, AttributeError) as e:
-                print('HAD AN ERROR HERE', e)
                 success = False
                 response = {'result': None, 'errors': str(e), }
             self.send_response(200 if success else 500)

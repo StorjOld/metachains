@@ -7,6 +7,7 @@ class Florincoin(object):
     """Florincoin abstracts away all RPC specific methods."""
 
     MaxPayloadSize = 528
+    ENCODING_OVERHEAD_ESTIMATE = 128
 
     def __init__(self, url, username, password):
         self.url = url
@@ -30,8 +31,7 @@ class Florincoin(object):
                 return json.loads(response.text)["result"]
             except requests.exceptions.ConnectionError:
                 time.sleep(2.0)
-#               continue
-                raise
+                continue
 
 
     def block_count(self):
@@ -69,6 +69,15 @@ class Florincoin(object):
     def send_data_address(self, data, address, amount):
         """Send data to the blockchain via a standard transaction."""
 
-        if len(data) > Florincoin.MaxPayloadSize:
-            raise Exception('not handled yet')
-        return self.jsonrpc("sendtoaddress", [address, str(amount), "storj", "storj", str(base64.b64encode(data))])
+        single_block_space = Florincoin.MaxPayloadSize - Florincoin.ENCODING_OVERHEAD_ESTIMATE
+        accum = []
+        offset = 0
+        while offset < len(data):
+            end = min(len(data), offset + single_block_space)
+            region = data[offset:end]
+
+            result = self.jsonrpc("sendtoaddress", [address, str(amount), "storj", "storj", str(base64.b64encode(region))])
+            accum.append(result)
+            offset += len(region)
+
+        return accum
