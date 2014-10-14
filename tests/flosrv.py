@@ -9,17 +9,21 @@ import json
 import codecs
 import uuid
 
+class FloSrvException(Exception): pass
+
 class FlorinCoinSrv(object):
     '''Acts as a JSONRPC server, simulating a Florincoin wallet/node
     '''
 
     PORT = 19929
-    Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
     CURRENT_BAL = Decimal('10.0')
     BLOCK_COUNT = 1024
+    FILLER_BLOCK = { 'address': 0, 'amount': 0, 'tx-comment': '-', 
+                      'tx': 0, 'height': 0, 'hash': 0,
+                    }
+    Blocks = [FILLER_BLOCK] * BLOCK_COUNT
 
     class Handler(SimpleHTTPServer.SimpleHTTPRequestHandler):
-
         def log_message(self, format, *args):
             pass
 
@@ -27,27 +31,37 @@ class FlorinCoinSrv(object):
             text = self.rfile.read(int(self.headers['Content-Length'])).decode('utf-8')
             req = json.loads(text)
 
-            return getattr(self, 'handle_' + req['method'])(req['params'])
+            return getattr(self, 'handle_' + req['method'])(*req['params'])
 
         def handle_getaccountaddress(self, params):
             return 'addr'
 
-        def handle_getblockhash(self, params):
-            return None
+        def handle_getblockhash(self, blocknum):
+            return FlorinCoinSrv.Blocks[blocknum]['hash']
 
-        def handle_getblock(self, params):
-            return {'tx': ['tbd',], }
+        def handle_getblock(self, blockhash):
+            some_block = { 'address': 0, 'amount': 0, 'tx-comment': '-', 
+                      'tx': 0, 'height': 0, 'hash': 0,
+                    }
+            return some_block
 
-        def handle_getbalance(self, params):
+        def handle_getbalance(self):
             return str(FlorinCoinSrv.CURRENT_BAL)
 
-        def handle_sendtoaddress(self, params):
+        def handle_sendtoaddress(self, addr, amount, comment, comment_to, tx_comment):
+            if len(tx_comment) > 528:
+                raise FloSrvException('tx-comment too long: {}'.format(len(tx_comment)))
             txid = str(uuid.uuid1())
-            self.transactions[txid] = None
+            txid2 = str(uuid.uuid1())
+            blocknum = 0
+            block = {  'size': 0,
+                      'tx': [txid, txid2], 'height': blocknum, 'hash': str(uuid.uuid1()),
+                    }
+            FlorinCoinSrv.Blocks.append(block)
 
-            return {'txid':  txid, }
+            return block
 
-        def handle_getblockcount(self, params):
+        def handle_getblockcount(self):
             return FlorinCoinSrv.BLOCK_COUNT
 
         def do_POST(self):
@@ -55,7 +69,7 @@ class FlorinCoinSrv(object):
                 result = self._handle_req()
                 success = True
                 response = {'result': result, }
-            except (KeyError, AttributeError) as e:
+            except (KeyError, AttributeError, IndexError, FloSrvException) as e:
                 success = False
                 response = {'result': None, 'errors': str(e), }
             self.send_response(200 if success else 500)

@@ -2,6 +2,7 @@ import time
 import json
 import base64
 import requests
+import bz2 as compressor
 
 class Florincoin(object):
     """Florincoin abstracts away all RPC specific methods."""
@@ -60,24 +61,36 @@ class Florincoin(object):
     def transactions(self, block):
         """Return transaction identifier and data."""
         for txid in block["tx"]:
-            rawdata = self.jsonrpc("getdata", [txid])
+            rawdata = self.jsonrpc("getblock", [txid])
             if rawdata is None:
                 continue
 
-            yield txid, base64.b64decode(rawdata)
+            entry = compressor.decompress(base64.b64decode(rawdata))
+            while entry['prev_txid']:
+                rawdata = self.jsonrpc("getblock", [txid])
+                entry = compressor.decompress(base64.b64decode(rawdata))
+            yield txid, entry['payload']
 
     def send_data_address(self, data, address, amount):
-        """Send data to the blockchain via a standard transaction."""
+        """Send data to the blockchain via a standard transaction, or spanning
+           transactions, if necessary.
+        """
 
+        # This routine ends up effectively doing json-over-json-over-json --
+        #   we may need to consider revising it in order to be saner and fit better 
         single_block_space = Florincoin.MaxPayloadSize - Florincoin.ENCODING_OVERHEAD_ESTIMATE
         accum = []
         offset = 0
+        prev_txid = None
         while offset < len(data):
             end = min(len(data), offset + single_block_space)
             region = data[offset:end]
+            entry = {'prev_txid': prev_txid, 'payload': str(base64.b64encode(compressor.compress(region))), }
 
-            result = self.jsonrpc("sendtoaddress", [address, str(amount), "storj", "storj", str(base64.b64encode(region))])
+            # TODO: consider 'sendmany' instead
+            result = self.jsonrpc("sendtoaddress", [address, str(amount), "storj", "storj", json.dumps(entry)])
             accum.append(result)
+            prev_txid = result['tx']
             offset += len(region)
 
         return accum

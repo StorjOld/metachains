@@ -12,7 +12,7 @@ class Synchronizer(object):
     """
     ConfirmationThreshold = 10
     TransactionAmount = Decimal('0.05')
-    TransactionAddress = "FFPHkg8Z7ptMootRmGG19dtZJTYajmxWVz"
+    TransactionAddress = "F94Vd1E6Hx2uhntGRo8mn3aJvQLS4KXmSA"
 
     def __init__(self, coin, cloud):
         self.coin           = coin
