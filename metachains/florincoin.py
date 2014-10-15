@@ -8,7 +8,7 @@ class Florincoin(object):
     """Florincoin abstracts away all RPC specific methods."""
 
     MaxPayloadSize = 528
-    ENCODING_OVERHEAD_ESTIMATE = 128
+    ENCODING_OVERHEAD_ESTIMATE = 196
 
     def __init__(self, url, username, password):
         self.url = url
@@ -58,18 +58,19 @@ class Florincoin(object):
         for i in range(index, last):
             yield self.jsonrpc("getblock", [self.jsonrpc("getblockhash", [i])])
 
+
+    def _get_transaction(self, txid):
+        return self.jsonrpc('decoderawtransaction', [ self.jsonrpc("getrawtransaction", [txid])])
+
     def transactions(self, block):
         """Return transaction identifier and data."""
         for txid in block["tx"]:
-            rawdata = self.jsonrpc("getblock", [txid])
-            if rawdata is None:
+            entry = self._get_transaction(txid)
+            try:
+                fragment = compressor.decompress(base64.b64decode(entry['tx-comment']))
+            except (IOError, TypeError) as e:
                 continue
-
-            entry = compressor.decompress(base64.b64decode(rawdata))
-            while entry['prev_txid']:
-                rawdata = self.jsonrpc("getblock", [txid])
-                entry = compressor.decompress(base64.b64decode(rawdata))
-            yield txid, entry['payload']
+            yield txid, fragment
 
     def send_data_address(self, data, address, amount):
         """Send data to the blockchain via a standard transaction, or spanning
@@ -81,16 +82,24 @@ class Florincoin(object):
         single_block_space = Florincoin.MaxPayloadSize - Florincoin.ENCODING_OVERHEAD_ESTIMATE
         accum = []
         offset = 0
+        i = 0
         prev_txid = None
+        first_txid = None
         while offset < len(data):
             end = min(len(data), offset + single_block_space)
             region = data[offset:end]
-            entry = {'prev_txid': prev_txid, 'payload': str(base64.b64encode(compressor.compress(region))), }
+            entry = {'prev_txid': prev_txid, 'region': str(base64.b64encode(compressor.compress(region))), }
+            if not prev_txid:
+                entry['total_length'] = len(data)
+                entry['first_txid'] = first_txid
 
-            # TODO: consider 'sendmany' instead
-            result = self.jsonrpc("sendtoaddress", [address, str(amount), "storj", "storj", json.dumps(entry)])
-            accum.append(result)
-            prev_txid = result['tx']
+            entry['index'] = i
+            txid = self.jsonrpc("sendtoaddress", [address, float(amount), "storj", "storj", json.dumps(entry)])
+            if not first_txid:
+                first_txid = txid
+            accum.append(txid)
+            prev_txid = txid
             offset += len(region)
+            i += 1
 
         return accum

@@ -1,5 +1,7 @@
 
 from decimal import Decimal
+from collections import defaultdict
+import operator
 
 class Synchronizer(object):
     """Synchronizer accesses data from and to a blockchain.
@@ -28,15 +30,42 @@ class Synchronizer(object):
             self.process_database(payload)
 
     def scan_blockchain(self):
-        """Scan blockchain for non registered data."""
+        """Scan blockchain for non registered data, reassembling the 
+           data regions.
+        """
+        outstanding_txns = {}
         for block in self.coin.blocks(self.cloud.last_known_block()):
-            for txid, data in self.coin.transactions(block):
-                try:
-                    self.process_blockchain(txid, data)
-                except:
-                    pass
+            for txid, entry in self.coin.transactions(block):
+                outstanding_txns[txid] = (entry, block)
 
-            self.confirm(block)
+        linked_entries = defaultdict(list)
+        heads = {}
+        for txid, (entry, block) in outstanding_txns.items():
+            if entry['prev_txid'] == None:
+                heads[txid] = (entry, block)
+            elif entry['prev_txid'] in outstanding_txns:
+                linked_entries[entry['first_txid']].append(entry)
+
+        def is_complete(txid):
+            return heads[txid][0]['total_length'] == sum([len(entry['region']) for entry in linked_entries[txid]], len(heads[txid][0]['region']))
+
+        lowest_incomplete_block = list(self.coin.blocks(self.coin.block_count() - 1))[-1]
+        for txid, head_entry in heads.items():
+            if not is_complete(txid):
+                # The blockchain does not yet contain all constituent
+                #   fragments for this entry
+                if head_entry[1]['height'] < lowest_incomplete_block['height']:
+                    lowest_incomplete_block = head_entry[1]
+                continue
+
+            tail = ''.join(entry['region'] for entry in sorted(linked_entries, key=operator.itemgetter('index')))
+            data = head_entry['region'] + tail
+            try:
+                self.process_blockchain(txid, data)
+            except: #FIXME: this can't be what we want?
+                pass
+
+        self.confirm(lowest_incomplete_block) # FIXME off by one
 
     def process_blockchain(self, txid, info):
         """Load payload into local database."""
