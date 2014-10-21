@@ -2,6 +2,7 @@
 
 import unittest
 from flosrv import FlorinCoinSrv
+import flosrv
 from metachains import Florincoin, Synchronizer
 from decimal import Decimal
 import os
@@ -27,6 +28,7 @@ class MockCoin(object):
 class MockCloud(object):
     def __init__(self):
         self.i = 1
+        self.data_loaded = {}
 
     def last_known_block(self):
         return 0
@@ -34,8 +36,8 @@ class MockCloud(object):
     def visit_block(self, blocknum):
         pass
 
-    def data_load(self, txid):
-        pass
+    def data_load(self, info, txid):
+        self.data_loaded[txid] = info
 
     def data_dump(self, max_):
         self.i -= 1
@@ -49,6 +51,8 @@ class FlorincoinTest(unittest.TestCase):
 
     def setUp(self):
         FlorinCoinSrv.Blocks = { hash(i): { 'address': 0, 'amount': 0, 'tx-comment': '-', 'tx': [], 'height': i, 'hash': hash(i), } for i in range(10) }
+#       FlorinCoinSrv.Transactions = { }
+        flosrv.Transactions = { }
         self.srv = FlorinCoinSrv()
         self.flo = Florincoin(self.srv.url, self.srv.username, self.srv.passwd)
         self.sync = Synchronizer(self.flo, MockCloud())
@@ -81,8 +85,10 @@ class FlorincoinTest(unittest.TestCase):
         '''Test 'sendtoaddress' method used to store metadata
         '''
         large_data_corpus = b'i' * (FlorincoinTest.DATA_SIZE)
-        response = self.flo.send_data_address(large_data_corpus, 'addr', Decimal('0.01'))
-        assert response
+        txid = self.flo.send_data_address(large_data_corpus, 'addr', Decimal('0.01'))
+        assert txid
+
+        assert txid in self.srv.httpd.Transactions
 
     @unittest.skip('unrealistic test case')
     def test_send_high_entropy(self):
@@ -92,11 +98,17 @@ class FlorincoinTest(unittest.TestCase):
 
     def test_roundtrip(self):
         large_data_corpus = b'R' * (FlorincoinTest.DATA_SIZE)
-        response = self.flo.send_data_address(large_data_corpus, 'addr', Decimal('0.01'))
-        assert response
+        txid = self.flo.send_data_address(large_data_corpus, 'addr', Decimal('0.01'))
+        assert txid != None
+        assert txid in self.srv.httpd.Transactions
+
+        tx_entry = self.flo._get_transaction(txid)
+        assert 'tx-comment' in tx_entry
 
 #       self.sync.scan_database()
         self.sync.scan_blockchain()
+        assert txid in self.srv.httpd.Transactions
+        assert txid in self.sync.cloud.data_loaded
 
 class SyncTest(unittest.TestCase):
     def setUp(self):

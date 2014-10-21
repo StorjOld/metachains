@@ -36,6 +36,8 @@ class Synchronizer(object):
         outstanding_txns = {}
         for block in self.coin.blocks(self.cloud.last_known_block()):
             for txid, entry in self.coin.transactions(block):
+                if not txid:
+                    continue
                 outstanding_txns[txid] = (entry, block)
 
         linked_entries = defaultdict(list)
@@ -50,15 +52,15 @@ class Synchronizer(object):
             return heads[txid][0]['total_length'] == sum([len(entry['region']) for entry in linked_entries[txid]], len(heads[txid][0]['region']))
 
         lowest_incomplete_block = list(self.coin.blocks(self.coin.block_count() - 1))[-1]
-        for txid, head_entry in heads.items():
+        for txid, (head_entry, head_block) in heads.items():
             if not is_complete(txid):
                 # The blockchain does not yet contain all constituent
                 #   fragments for this entry
-                if head_entry[1]['height'] < lowest_incomplete_block['height']:
-                    lowest_incomplete_block = head_entry[1]
+                if head_block['height'] < lowest_incomplete_block['height']:
+                    lowest_incomplete_block = head_block
                 continue
 
-            tail = ''.join(entry['region'] for entry in sorted(linked_entries, key=operator.itemgetter('index')))
+            tail = b''.join(entry['region'] for entry in sorted(linked_entries[txid], key=operator.itemgetter('index')))
             data = head_entry['region'] + tail
             try:
                 self.process_blockchain(txid, data)

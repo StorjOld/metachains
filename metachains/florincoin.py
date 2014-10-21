@@ -3,6 +3,8 @@ import json
 import base64
 import requests
 import bz2 as compressor
+import io
+import codecs
 
 class Florincoin(object):
     """Florincoin abstracts away all RPC specific methods."""
@@ -64,13 +66,19 @@ class Florincoin(object):
 
     def transactions(self, block):
         """Return transaction identifier and data."""
+        import binascii
+
         for txid in block["tx"]:
             entry = self._get_transaction(txid)
             try:
-                fragment = compressor.decompress(base64.b64decode(entry['tx-comment']))
-            except (IOError, TypeError) as e:
+                fragment_entry = json.loads(entry['tx-comment'])
+                region = codecs.encode(str(fragment_entry['region']), 'utf-8')
+                fragment_entry['region'] = compressor.decompress(base64.b64decode(region))
+
+            except (ValueError, IOError, TypeError) as e:
                 continue
-            yield txid, fragment
+
+            yield txid, fragment_entry
 
     def send_data_address(self, data, address, amount):
         """Send data to the blockchain via a standard transaction, or spanning
@@ -80,7 +88,6 @@ class Florincoin(object):
         # This routine ends up effectively doing json-over-json-over-json --
         #   we may need to consider revising it in order to be saner and fit better 
         single_block_space = Florincoin.MaxPayloadSize - Florincoin.ENCODING_OVERHEAD_ESTIMATE
-        accum = []
         offset = 0
         i = 0
         prev_txid = None
@@ -88,18 +95,19 @@ class Florincoin(object):
         while offset < len(data):
             end = min(len(data), offset + single_block_space)
             region = data[offset:end]
-            entry = {'prev_txid': prev_txid, 'region': str(base64.b64encode(compressor.compress(region))), }
+            entry = {'prev_txid': prev_txid, 'region': codecs.decode(base64.b64encode(compressor.compress(region)), 'utf-8'), }
             if not prev_txid:
                 entry['total_length'] = len(data)
+            if first_txid:
                 entry['first_txid'] = first_txid
 
             entry['index'] = i
             txid = self.jsonrpc("sendtoaddress", [address, float(amount), "storj", "storj", json.dumps(entry)])
+
             if not first_txid:
                 first_txid = txid
-            accum.append(txid)
             prev_txid = txid
             offset += len(region)
             i += 1
 
-        return accum
+        return first_txid
