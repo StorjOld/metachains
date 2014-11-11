@@ -75,7 +75,7 @@ class Florincoin(object):
                 region = codecs.encode(str(fragment_entry['region']), 'utf-8')
                 fragment_entry['region'] = compressor.decompress(base64.b64decode(region))
 
-            except (ValueError, IOError, TypeError) as e:
+            except (ValueError, IOError, TypeError, KeyError) as e:
                 continue
 
             yield txid, fragment_entry
