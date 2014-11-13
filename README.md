@@ -10,7 +10,7 @@ You can clone this repository and use its module directly. Alternatively, you
 can build a package and install it through pip:
 
     python setup.py sdist
-    sudo pip install dist/metachains_dtc-0.1.4.tar.gz
+    sudo pip install dist/metachains-0.4.0.tar.gz
 
 #### Florincoin installation 
 Instructions can be found at [INSTALL.md](/INSTALL.md).
