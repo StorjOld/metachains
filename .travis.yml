@@ -1,0 +1,14 @@
+language: python
+branches:
+  except:
+    - legacy
+    - experimental
+env:
+  - TOXENV=py27
+  - TOXENV=py34
+before_install:
+  - pip install tox
+install:
+  - travis_retry pip install -e '.[test]'
+script:
+  - tox
