@@ -2,6 +2,7 @@
 from decimal import Decimal
 from collections import defaultdict
 import operator
+import logging
 
 class Synchronizer(object):
     """Synchronizer accesses data from and to a blockchain.
@@ -19,6 +20,7 @@ class Synchronizer(object):
     def __init__(self, coin, cloud):
         self.coin           = coin
         self.cloud          = cloud
+        self._log = logging.getLogger('storj.metachains')
 
     def scan_database(self):
         """Scan database for non published data."""
@@ -27,6 +29,7 @@ class Synchronizer(object):
             if payload is None:
                 return
 
+            self._log.info('scan_database: processing payload')
             self.process_database(payload)
 
     def scan_blockchain(self):
@@ -35,6 +38,7 @@ class Synchronizer(object):
         """
         outstanding_txns = {}
         for block in self.coin.blocks(self.cloud.last_known_block()):
+            self._log.info('scan_blockchain: indexing block #{}'.format(block['height'])) # Todo make this debug
             for txid, entry in self.coin.transactions(block):
                 if not txid:
                     continue

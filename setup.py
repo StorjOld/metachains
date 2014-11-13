@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='metachains_dtc',
-    version='0.3.0',
+    version='0.4.0',
     author='Hugo Peixoto',
     author_email='hugo.peixoto@gmail.com',
     packages=find_packages(),
