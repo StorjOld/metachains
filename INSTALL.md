@@ -28,6 +28,8 @@ Then, compile and install florincoind:
     make -f makefile.unix
     sudo cp -f florincoind /usr/local/bin/
 
+If you are using a virtual machine with 1 GB or less the build may fail due to insufficient RAM. You can use [this guide](https://www.digitalocean.com/community/tutorials/how-to-add-swap-on-ubuntu-12-04) to add some swap.
+
 Setup florincoin
 ----------------
 
