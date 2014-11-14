@@ -24,8 +24,8 @@ It must be configured with the json rpc url, username and password:
     import metachains
     mtc = metachains.Florincoin(
         "http://127.0.0.1:7313",
-        "florincoinrpc",
-        "f1239a0069m")
+        "user",
+        "pass")
         
 Be sure to use the `rpcport`, `rpcuser` and `rpcpassword` you used in the Florcoin config or install. 
 
