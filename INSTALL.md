@@ -81,3 +81,29 @@ Then, reload the configuration to include the script you just made:
 
 If you want to manually start florincoind as a daemon, run `sudo start florincoind` and to stop it, run `sudo stop florincoind`.
 
+Finding florincoin sync status
+------------------------
+You can run florincoind independently:
+
+    florincoind -daemon
+    florincoind getinfo
+
+This will give you the current block as part of the status. See the [Florincoin block explorer](http://florincoin.info/explorer/) to see the latest block. 
+
+    root@florincoin:~/build/florincoin-master/src# florincoind getinfo
+    {
+        "version" : 60515,
+        "protocolversion" : 60001,
+        "walletversion" : 60000,
+        "balance" : 0.00000000,
+        "blocks" : 251144,
+        "connections" : 4,
+        "proxy" : "",
+        "difficulty" : 0.37392803,
+        "testnet" : false,
+        "keypoololdest" : 1415921429,
+        "keypoolsize" : 101,
+        "paytxfee" : 0.00000000,
+        "mininput" : 0.00010000,
+        "errors" : ""
+    }
