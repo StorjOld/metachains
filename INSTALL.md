@@ -42,7 +42,7 @@ If you are using a virtual machine with 1 GB or less the build may fail due to i
 Setup florincoin
 ----------------
 
-Now add a configuration file with some values to your user directory:
+Now add a configuration file with some values to your user directory. You should change `rpcuser` and `rpcpassword` values to your own for security reasons. 
 
     mkdir -p ~/.florincoin;
     echo 'addnode=node1.metadisk.org
