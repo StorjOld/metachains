@@ -58,8 +58,8 @@ Now add a configuration file with some values to your user directory. You should
     addnode=146.185.148.114
     addnode=192.241.171.45
     rpcallowip=127.0.0.1
-    rpcuser=florincoinrpc
-    rpcpassword=f1239a0069m' > ~/.florincoin/florincoin.conf
+    rpcuser=user
+    rpcpassword=pass' > ~/.florincoin/florincoin.conf
 
 Add florincoin as a daemon
 ------------------------
