@@ -22,28 +22,28 @@ This module contains a class that can be used to communicate via json-rpc.
 It must be configured with the json rpc url, username and password:
 
     import metachains
-    dtc = metachains.Florincoin(
+    mtc = metachains.Florincoin(
         "http://127.0.0.1:11777",
         "florincoind",
         "secret-password")
 
 Once you do this, you'll have access to the following methods:
 
-    dtc.block_count()        # Returns the number of blocks in the chain.
+    mtc.block_count()        # Returns the number of blocks in the chain.
 
-    dtc.balance()            # Returns the wallet balance.
+    mtc.balance()            # Returns the wallet balance.
 
-    dtc.address(account)     # Returns an address for the given account.
+    mtc.address(account)     # Returns an address for the given account.
 
-    dtc.blocks(index, n)     # Generates n blocks in the chain,
+    mtc.blocks(index, n)     # Generates n blocks in the chain,
                              # starting from index.
 
-    dtc.transactions(block)  # Generates all data transactions in a block,
+    mtc.transactions(block)  # Generates all data transactions in a block,
                              # generating pairs (transaction_id, raw_data).
 
-    dtc.send_data(raw_data)  # Sends data to the blockchain.
+    mtc.send_data(raw_data)  # Sends data to the blockchain.
 
-    dtc.send_data(raw_data, address, amount)  # Send data to the blockchain via a standard transaction.
+    mtc.send_data(raw_data, address, amount)  # Send data to the blockchain via a standard transaction.
 
 
 #### Synchronizer usage
