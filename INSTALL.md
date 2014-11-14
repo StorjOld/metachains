@@ -10,12 +10,21 @@ First, there are some dependencies and tools that can easily be installed throug
 
     sudo apt-get update ; sudo apt-get install -y build-essential m4 libssl-dev libdb++-dev libboost-all-dev libminiupnpc-dev zip libgmp-dev
 
-Then, create a directory for the files that you download and compile in the next steps:
+Pre-complied florincoind
+--------------------------------
+In the Storj fork of [Florincoin](https://github.com/Storj/florincoin), there are release binaries [here](https://github.com/Storj/florincoin/releases), that you may download those instead of compiling from scatch. 
 
-    mkdir ~/build;
+    wget https://github.com/Storj/florincoin/releases/download/0.6.5.15/florincoind-ubuntu1404x64
+    mv florincoind-ubuntu1404x64 florincoind
+    sudo cp -f florincoind /usr/local/bin/
+    
+Skip the steps for to "Download and Compile florincoind", and procede to "Setup florincoin."
 
 Download and Compile florincoind
 --------------------------------
+Create a directory for the files that you download and compile in the next steps:
+
+    mkdir ~/build;
 
 Get the florincoind file from GitHub and extract it:
 
