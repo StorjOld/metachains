@@ -1,6 +1,8 @@
 metachains
 ==========
 
+[![Build Status](https://travis-ci.org/Storj/metachains.svg?branch=master)](https://travis-ci.org/Storj/metachains) [![Coverage Status](https://img.shields.io/coveralls/Storj/metachains.svg)](https://coveralls.io/r/Storj/metachains)
+
 Tool for accessing and dumping metachain data into the Florincoin blockchain.
 
 
